@@ -1,11 +1,10 @@
 package com.simpletodo.simpletodo;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -13,15 +12,19 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.simpletodo.simpletodo.db.DbTodoDataProvider;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class TodoActivity extends AppCompatActivity {
 
-    private List<String> mTodoItems = new ArrayList<>();
+    private List<String> mTodoItems = new ArrayList<>(); //use as local cache
     private ListView mListView;
-    private SharedPreferences mSharedPrefs;
+    private DbTodoDataProvider mDataProvider;
+    private String mTodoItemToEdit;
+    private EditText mEditText;
 
     final Integer EDIT_ITEM_ACTIVITY = 0;
 
@@ -30,27 +33,27 @@ public class TodoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todo);
         mListView = (ListView) findViewById(R.id.list_item);
+        mDataProvider = new DbTodoDataProvider(getApplicationContext());
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 
-        mSharedPrefs = this.getPreferences(Context.MODE_PRIVATE);
-        String mTodoItemsString = mSharedPrefs.getString("todoItemList", "");
-        if (!mTodoItemsString.equals("")) {
-            String[] list = mTodoItemsString.split(",");
-            for (String item : list) {
-                mTodoItems.add(item);
-            }
-            updateItemList();
-        }
+        mEditText = (EditText) findViewById(R.id.edit_text);
+        mEditText.requestFocus();
+
+        mTodoItems = mDataProvider.getTodoDataFromDb();
+        updateItemList();
 
         final Button button = (Button) findViewById(R.id.add_button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                EditText editEditText = (EditText) findViewById(R.id.edit_text);
-                String content = editEditText.getText().toString();
-                if (!content.equals("")) {
+                String content = mEditText.getText().toString();
+                if (!content.equals("") && !mTodoItems.contains(content)) {
                     mTodoItems.add(content);
+                    mDataProvider.storeTodoItemInDB(content);
                     updateItemList();
+                } else if (mTodoItems.contains(content)) {
+                    Toast.makeText(TodoActivity.this, "Item already in the list", Toast.LENGTH_LONG).show();
                 }
-                editEditText.setText(null);
+                mEditText.setText(null);
             }
         });
 
@@ -59,10 +62,9 @@ public class TodoActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long arg3)
             {
                 String selectedFromList = mListView.getItemAtPosition(position).toString();
-                Toast.makeText(TodoActivity.this, "" + position + " " + selectedFromList, Toast.LENGTH_SHORT).show();
-
                 Intent intent = new Intent(TodoActivity.this, EditItemActivity.class);
                 Bundle bundle = new Bundle();
+                mTodoItemToEdit = selectedFromList;
                 bundle.putInt("index", position);
                 bundle.putString("value", selectedFromList);
                 intent.putExtras(bundle);
@@ -76,7 +78,9 @@ public class TodoActivity extends AppCompatActivity {
             public boolean onItemLongClick(AdapterView<?> av, View v, int pos, long id)
             {
                 Toast.makeText(TodoActivity.this, "Item Deleted", Toast.LENGTH_LONG).show();
+                String toRemove = mTodoItems.get(pos);
                 mTodoItems.remove(pos);
+                mDataProvider.removeTodoItemFromDb(toRemove);
                 updateItemList();
                 return true;
             }
@@ -90,6 +94,7 @@ public class TodoActivity extends AppCompatActivity {
                 Integer index = data.getIntExtra("index", -1);
                 String newValue =data.getStringExtra("value");
                 mTodoItems.set(index, newValue);
+                mDataProvider.updateTodoItemInDb(mTodoItemToEdit, newValue);
                 updateItemList();
             }
         }
@@ -98,12 +103,12 @@ public class TodoActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        StringBuilder todoItemList = new StringBuilder();
-        for(String s : mTodoItems){
-            todoItemList.append(s);
-            todoItemList.append(",");
-        }
-        mSharedPrefs.edit().putString("todoItemList", todoItemList.toString()).apply();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mDataProvider.close();
+        super.onDestroy();
     }
 
     private void updateItemList() {

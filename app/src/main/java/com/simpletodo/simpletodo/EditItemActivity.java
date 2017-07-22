@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -20,7 +21,7 @@ public class EditItemActivity extends AppCompatActivity {
         setTitle(R.string.edit_app_name);
         EditText editText = (EditText) findViewById(R.id.edit_todo_item);
         editText.requestFocus();
-
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 
         Bundle bundle = getIntent().getExtras();
         mIndex = bundle.getInt("index");
