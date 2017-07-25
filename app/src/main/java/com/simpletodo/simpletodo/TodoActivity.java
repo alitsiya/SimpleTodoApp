@@ -6,17 +6,17 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.simpletodo.simpletodo.customAdapter.Todo;
+import com.simpletodo.simpletodo.customAdapter.TodoAdapter;
 import com.simpletodo.simpletodo.db.DbTodoDataProvider;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class TodoActivity extends AppCompatActivity {
 
@@ -25,6 +25,7 @@ public class TodoActivity extends AppCompatActivity {
     private DbTodoDataProvider mDataProvider;
     private String mTodoItemToEdit;
     private EditText mEditText;
+    private TodoAdapter mAdapter;
 
     final Integer EDIT_ITEM_ACTIVITY = 0;
 
@@ -32,7 +33,9 @@ public class TodoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todo);
+
         mListView = (ListView) findViewById(R.id.list_item);
+
         mDataProvider = new DbTodoDataProvider(getApplicationContext());
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 
@@ -61,12 +64,12 @@ public class TodoActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long arg3)
             {
-                String selectedFromList = mListView.getItemAtPosition(position).toString();
+                Todo obj = (Todo) mAdapter.getItem(position);
                 Intent intent = new Intent(TodoActivity.this, EditItemActivity.class);
                 Bundle bundle = new Bundle();
-                mTodoItemToEdit = selectedFromList;
+                mTodoItemToEdit = obj.name;
                 bundle.putInt("index", position);
-                bundle.putString("value", selectedFromList);
+                bundle.putString("value", obj.name);
                 intent.putExtras(bundle);
 
                 startActivityForResult(intent, EDIT_ITEM_ACTIVITY);
@@ -112,9 +115,16 @@ public class TodoActivity extends AppCompatActivity {
     }
 
     private void updateItemList() {
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-            this, android.R.layout.simple_list_item_1, mTodoItems);
-        mListView.setAdapter(arrayAdapter);
+        // Construct the data source
+        ArrayList<Todo> arrayOfTodos = new ArrayList<>();
+        for (String item : mTodoItems) {
+            Todo newTodo = new Todo(item);
+            arrayOfTodos.add(newTodo);
+        }
+        // Create the adapter to convert the array to views
+        mAdapter = new TodoAdapter(this, arrayOfTodos);
+        // Attach the adapter to a ListView
+        mListView.setAdapter(mAdapter);
     }
 
 }
