@@ -2,28 +2,31 @@ package com.simpletodo.simpletodo.customAdapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
+import com.simpletodo.simpletodo.db.DbTodoDataProvider;
+
 import java.util.Collections;
+import java.util.List;
 
 public class TodoAdapter extends RecyclerView.Adapter<TodoItemHolder> implements ItemTouchHelperAdapter {
     private Context context;
-    private final ArrayList<Todo> todoItems;
+    private final List<Todo> todoItems;
     private int itemResource;
+    private DbTodoDataProvider mDataProvider;
 
-    public TodoAdapter(Context context, int itemResource, ArrayList<Todo> todoItems) {
+    public TodoAdapter(Context context, int itemResource, List<Todo> todoItems) {
         this.todoItems = todoItems;
         this.context = context;
         this.itemResource = itemResource;
+
+        mDataProvider = new DbTodoDataProvider(this.context);
     }
 
     @Override
     public TodoItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Log.d("@@@", "TodoAdapter onCreateViewHolder");
         View view = LayoutInflater.from(parent.getContext())
             .inflate(this.itemResource, parent, false);
         return new TodoItemHolder(this.context, view);
@@ -32,13 +35,11 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoItemHolder> implements
     @Override
     public void onBindViewHolder(TodoItemHolder holder, int position) {
         Todo todoItem = this.todoItems.get(position);
-        Log.d("@@@", "TodoAdapter onBindViewHolder");
         holder.bindTodo(todoItem);
     }
 
     @Override
     public int getItemCount() {
-        Log.d("@@@", "TodoAdapter getItemCount " + this.todoItems.size());
         return this.todoItems.size();
     }
     @Override
@@ -56,6 +57,7 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoItemHolder> implements
     }
     @Override
     public void onItemDismiss(int position) {
+        mDataProvider.removeTodoItemFromDb(this.todoItems.get(position));
         this.todoItems.remove(position);
         notifyItemRemoved(position);
     }

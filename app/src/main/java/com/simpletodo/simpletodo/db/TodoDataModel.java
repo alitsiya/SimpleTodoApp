@@ -11,5 +11,7 @@ public class TodoDataModel {
         public static final String TABLE_NAME = "todoItems";
         public static final String TODO_COLUMN_ID = "id";
         public static final String TODO_COLUMN_NAME = "item";
+        public static final String TODO_COLUMN_PRIORITY = "priority";
+        public static final String TODO_COLUMN_DATE = "date";
     }
 }

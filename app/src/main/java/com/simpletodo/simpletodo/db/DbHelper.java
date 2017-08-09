@@ -3,17 +3,21 @@ package com.simpletodo.simpletodo.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
 import com.simpletodo.simpletodo.db.TodoDataModel.TodoEntry;
 
 public class DbHelper extends SQLiteOpenHelper {
 
-    public static final String DATABASE_NAME = "MyDBName.db";
+    public static final String DATABASE_NAME = "TodoList.db";
     public static final int DATABASE_VERSION = 1;
 
     private static final String SQL_CREATE_ENTRIES =
         "CREATE TABLE " + TodoEntry.TABLE_NAME + " (" +
-            TodoEntry.TODO_COLUMN_ID + " INTEGER PRIMARY KEY," +
-            TodoEntry.TODO_COLUMN_NAME + " TEXT)";
+            TodoEntry.TODO_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+            TodoEntry.TODO_COLUMN_NAME + " TEXT," +
+            TodoEntry.TODO_COLUMN_PRIORITY + " INTEGER," +
+            TodoEntry.TODO_COLUMN_DATE + " TEXT)";
 
     private static final String SQL_DELETE_ENTRIES =
         "DROP TABLE IF EXISTS " + TodoEntry.TABLE_NAME;
@@ -23,6 +27,7 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public void onCreate(SQLiteDatabase db) {
+        Log.d("@@@", "Create DB "+ SQL_CREATE_ENTRIES);
         db.execSQL(SQL_CREATE_ENTRIES);
     }
 

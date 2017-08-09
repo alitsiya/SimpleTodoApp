@@ -5,9 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.simpletodo.simpletodo.customAdapter.Todo;
 import com.simpletodo.simpletodo.db.TodoDataModel.TodoEntry;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DbTodoDataProvider {
     private DbHelper mDbHelper;
@@ -16,29 +18,42 @@ public class DbTodoDataProvider {
         mDbHelper =  new DbHelper(context);
     }
 
-    public void storeTodoItemInDB(String item) {
+    public void storeTodoItemInDB(Todo todoItem) {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(TodoEntry.TODO_COLUMN_NAME, item);
+        values.put(TodoEntry.TODO_COLUMN_NAME, todoItem.name);
+        values.put(TodoEntry.TODO_COLUMN_PRIORITY, todoItem.priority);
+        values.put(TodoEntry.TODO_COLUMN_DATE, todoItem.date);
 
-        db.insert(TodoEntry.TABLE_NAME, null, values);
+        try {
+            db.beginTransaction();
+            db.insert(TodoEntry.TABLE_NAME, null, values);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
     }
 
-    public Boolean isTodoItemInDB(String item) {
-        Cursor cursor = readTodoItemFromDB(item);
+    public Boolean isTodoItemInDB(Todo todoItem) {
+        Cursor cursor = readTodoItemFromDB(todoItem);
         return cursor.getCount() > 0;
     }
 
-    public ArrayList<String> getTodoDataFromDb() {
-        ArrayList<String> listOfToDoItems = new ArrayList<>();
+    public List<Todo> getTodoDataFromDb() {
+        List<Todo> listOfToDoItems = new ArrayList<>();
 
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
         Cursor  cursor = db.rawQuery("select * from " + TodoEntry.TABLE_NAME,null);
         while(cursor.moveToNext()) {
             String item = cursor.getString(
                 cursor.getColumnIndexOrThrow(TodoEntry.TODO_COLUMN_NAME));
-            listOfToDoItems.add(item);
+            Integer priority = cursor.getInt(
+                cursor.getColumnIndexOrThrow(TodoEntry.TODO_COLUMN_PRIORITY));
+            String date = cursor.getString(
+                cursor.getColumnIndexOrThrow(TodoEntry.TODO_COLUMN_DATE));
+            Todo todoItem = new Todo(item, priority, date);
+            listOfToDoItems.add(todoItem);
         }
         cursor.close();
 
@@ -66,11 +81,11 @@ public class DbTodoDataProvider {
     }
 
     // Remove row from Database
-    public void removeTodoItemFromDb(String item) {
+    public void removeTodoItemFromDb(Todo todoItem) {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         String selection = TodoEntry.TODO_COLUMN_NAME + " LIKE ?";
-        String[] selectionArgs = { item };
+        String[] selectionArgs = { todoItem.name };
         db.delete(TodoEntry.TABLE_NAME, selection, selectionArgs);
     }
 
@@ -78,7 +93,7 @@ public class DbTodoDataProvider {
         mDbHelper.close();
     }
 
-    private Cursor readTodoItemFromDB(String item) {
+    private Cursor readTodoItemFromDB(Todo todoItem) {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
         String[] projection = {
@@ -87,7 +102,7 @@ public class DbTodoDataProvider {
         };
 
         String selection = TodoEntry.TODO_COLUMN_NAME + " = ?";
-        String[] selectionArgs = {item};
+        String[] selectionArgs = {todoItem.name};
         String sortOrder = TodoEntry.TODO_COLUMN_NAME + " DESC";
 
         return db.query(

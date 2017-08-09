@@ -1,11 +1,42 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content" >
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              xmlns:tools="http://schemas.android.com/tools">
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal">
     <TextView
         android:id="@+id/item_name"
         android:textSize="@dimen/text_size"
         android:layout_marginTop="@dimen/margin_small"
         android:layout_marginBottom="@dimen/margin_small"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        tools:text="Task here"/>
+    <TextView
+        android:id="@+id/item_priority"
+        android:textSize="@dimen/text_size_big"
+        android:layout_margin="@dimen/margin_small"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:gravity="end"
+        android:layout_weight="1"
+        tools:text="1"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/item_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_small"
+            android:gravity="end"
+            android:layout_gravity="end"
+            tools:text="07/07/2017"/>
+    </LinearLayout>
 </LinearLayout>
