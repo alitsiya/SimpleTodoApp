@@ -61,6 +61,5 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoItemHolder> implements
         this.todoItems.remove(position);
         notifyItemRemoved(position);
     }
-
 }
 

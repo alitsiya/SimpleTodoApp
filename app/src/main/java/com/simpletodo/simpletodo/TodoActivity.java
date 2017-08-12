@@ -28,8 +28,6 @@ public class TodoActivity extends AppCompatActivity {
     private TodoAdapter mAdapter;
 
     private final String VALUE = "value";
-    private final String PRIORITY = "priority";
-    private final String DATE = "date";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +43,6 @@ public class TodoActivity extends AppCompatActivity {
         mEditText = (EditText) findViewById(R.id.edit_text);
         mEditText.requestFocus();
 
-        mTodoItems = mDataProvider.getTodoDataFromDb();
         updateItemList();
 
         final Button button = (Button) findViewById(R.id.add_button);
@@ -55,8 +52,6 @@ public class TodoActivity extends AppCompatActivity {
                 Intent intent = new Intent(mListView.getContext(), EditItemActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString(VALUE, content);
-                bundle.putString(DATE, "07/07/2107");
-                bundle.putInt(PRIORITY, 1);
                 intent.putExtras(bundle);
                 mListView.getContext().startActivity(intent);
                 mEditText.setText(null);
@@ -123,5 +118,4 @@ public class TodoActivity extends AppCompatActivity {
         mListView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         mListView.setAdapter(mAdapter);
     }
-
 }

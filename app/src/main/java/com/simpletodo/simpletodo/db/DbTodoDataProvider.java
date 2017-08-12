@@ -44,7 +44,8 @@ public class DbTodoDataProvider {
         List<Todo> listOfToDoItems = new ArrayList<>();
 
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
-        Cursor  cursor = db.rawQuery("select * from " + TodoEntry.TABLE_NAME,null);
+        Cursor  cursor = db.rawQuery("select * from " + TodoEntry.TABLE_NAME
+            + " ORDER BY "+ TodoEntry.TODO_COLUMN_PRIORITY +" ASC",null);
         while(cursor.moveToNext()) {
             String item = cursor.getString(
                 cursor.getColumnIndexOrThrow(TodoEntry.TODO_COLUMN_NAME));
@@ -61,13 +62,14 @@ public class DbTodoDataProvider {
     }
 
     // Update Database
-    public void updateTodoItemInDb(String previousItem, String newItem) {
+    public void updateTodoItemInDb(String previousItem, Todo todoItem) {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         // New value for one column
         ContentValues values = new ContentValues();
-        values.put(TodoEntry.TODO_COLUMN_NAME, newItem);
-
+        values.put(TodoEntry.TODO_COLUMN_NAME, todoItem.name);
+        values.put(TodoEntry.TODO_COLUMN_DATE, todoItem.date);
+        values.put(TodoEntry.TODO_COLUMN_PRIORITY, todoItem.priority);
         // Which row to update, based on the title
         String selection = TodoEntry.TODO_COLUMN_NAME + " LIKE ?";
         String[] selectionArgs = { previousItem };

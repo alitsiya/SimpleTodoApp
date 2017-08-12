@@ -3,7 +3,6 @@ package com.simpletodo.simpletodo.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.simpletodo.simpletodo.db.TodoDataModel.TodoEntry;
 
@@ -27,7 +26,6 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public void onCreate(SQLiteDatabase db) {
-        Log.d("@@@", "Create DB "+ SQL_CREATE_ENTRIES);
         db.execSQL(SQL_CREATE_ENTRIES);
     }
 

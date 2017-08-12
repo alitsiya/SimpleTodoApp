@@ -4,7 +4,7 @@
 
 Submitted by: **Alitsiya Yusupova**
 
-Time spent: **8** hours spent in total
+Time spent: **11** hours spent in total
 
 ## User Stories
 
@@ -18,9 +18,9 @@ The following **optional** features are implemented:
 
 * [x] Persist the todo items [into SQLite](http://guides.codepath.com/android/Persisting-Data-to-the-Device#sqlite) instead of a text file
 * [x] Improve style of the todo items in the list [using a custom adapter](http://guides.codepath.com/android/Using-an-ArrayAdapter-with-ListView)
-* [ ] Add support for completion due dates for todo items (and display within listview item)
+* [x] Add support for completion due dates for todo items (and display within listview item)
 * [ ] Use a [DialogFragment](http://guides.codepath.com/android/Using-DialogFragment) instead of new Activity for editing items
-* [ ] Add support for selecting the priority of each todo item (and display in listview item)
+* [x] Add support for selecting the priority of each todo item (and display in listview item)
 * [ ] Tweak the style improving the UI / UX, play with colors, images or backgrounds
 
 The following **additional** features are implemented:
@@ -31,13 +31,27 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/Cw81WQe.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='http://i.imgur.com/r73Blnd.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
+## Project Analysis
+
+As part of your pre-work submission, please reflect on the app and answer the following questions below:
+
+**Question 1:** "What are your reactions to the Android app development platform so far? Compare and contrast Android's approach to layouts and user interfaces in past platforms you've used."
+
+**Answer:** I found that using Android Platform for an Intro project is very easy, I don't have to worry about exporting basic libraries since majority of components are incleded into Android SDK. Structure of Android projects makes it easy to navigate and read/write code, included to Android Studio Emulator and debugger tool makes it easy to execute and debug your code. Documentation is good and amount of StackOverflow information is tremendouse.
+Working with Android views is challenging since I don't know much about it to fully understand how it all works and behave. UI is similar to web-development where you use html/xml to add different UI components. And googling how to make different element in layout to be exaclty where you want it to be is the same way painful as building web ui.
+
+**Question 2:** "Take a moment to reflect on the `ArrayAdapter` used in your pre-work. How would you describe an adapter in this context and what is its function in Android? Why do you think the adapter is important? Explain the purpose of the `convertView` in the `getView` method of the `ArrayAdapter`."
+
+**Answer:** ArrayAdapter is a medium between view and the data that needs to be placed inside this veiw. ArrayAdapter converts ListView into individual Views. ArrayAdapter helps to keep only currently visible and next/previous items in memory and not to load all the data. 
+ConvertView used to reuse views in listview if possible.
+
 ## Notes
 
-Describe any challenges encountered while building the app.
+I wanted to have Drag-n-Drop to change Todo item priority and Swipe to delete features, so I spent some time researching and started using RecyclerView instead of ListView to hold my Todo items. RecyclerView and ListView have a small amount of common features, so I basically rewrote whole logic with RecyclerView.
 
 ## License
 
