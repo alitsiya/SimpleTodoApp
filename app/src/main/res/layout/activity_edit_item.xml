@@ -36,6 +36,8 @@
         android:text="@string/due_date_label"/>
     <DatePicker
         android:id="@+id/item_due_date"
+        android:datePickerMode="spinner"
+        android:calendarViewShown="false"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
     <Button

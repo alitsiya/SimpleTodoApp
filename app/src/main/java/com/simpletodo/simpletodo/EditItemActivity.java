@@ -1,6 +1,7 @@
 package com.simpletodo.simpletodo;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
@@ -10,6 +11,7 @@ import android.widget.EditText;
 
 import com.simpletodo.simpletodo.customAdapter.Todo;
 import com.simpletodo.simpletodo.db.DbTodoDataProvider;
+import com.simpletodo.simpletodo.dialog.EditTodoDialogFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,14 +33,15 @@ public class EditItemActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_item);
-        setTitle(R.string.edit_app_name);
-        mEditTodoItem = (EditText) findViewById(R.id.edit_todo_item);
-        mEditTodoItem.requestFocus();
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-        mEditPriority = (EditText) findViewById(R.id.item_priority);
-        mDatePicker = (DatePicker) findViewById(R.id.item_due_date);
-
-        updateUI();
+        showEditDialog();
+//        setTitle(R.string.edit_app_name);
+//        mEditTodoItem = (EditText) findViewById(R.id.edit_todo_item);
+//        mEditTodoItem.requestFocus();
+//        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+//        mEditPriority = (EditText) findViewById(R.id.item_priority);
+//        mDatePicker = (DatePicker) findViewById(R.id.item_due_date);
+//
+//        updateUI();
 
         mDataProvider = new DbTodoDataProvider(getApplicationContext());
 
@@ -60,6 +63,12 @@ public class EditItemActivity extends AppCompatActivity {
             }
         });
     }
+    private void showEditDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        EditTodoDialogFragment editTodoDialogFragment = EditTodoDialogFragment.newInstance("", "1", "");
+        editTodoDialogFragment.show(fm, "fragment_edit_todo");
+    }
+
     private void updateUI() {
         Bundle bundle = getIntent().getExtras();
         mPriority = bundle.getString("priority", "1");
